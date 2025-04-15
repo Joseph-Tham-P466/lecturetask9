@@ -1,0 +1,15 @@
+FROM openjdk:17-jdk-alpine3.14 AS jlinker
+
+WORKDIR /lecturetask9
+COPY . /lecturetask9
+RUN mv src/main/java/module-info.java.disabled src/main/java/module-info.java
+RUN mv src/main/resources/logback.xml.disabled src/main/resources/logback.xml
+
+RUN apk --nocache add binutils
+
+RUN ./mvnw clean package jlink:jlink
+
+FROM alpine:3.16.0
+
+COPY --from=jlinker /lecturetask9/target/jlink-image /app
+CMD ["/app/bin/lecturetask9"]

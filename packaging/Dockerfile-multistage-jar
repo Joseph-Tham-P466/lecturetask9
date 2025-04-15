@@ -1,0 +1,20 @@
+# ---- Build Stage ----
+    FROM maven:3.8-openjdk-17 AS builder
+
+    WORKDIR /lecturetask9
+    
+    COPY . .
+    
+    RUN mvn clean package
+    
+    # ---- Runtime Stage ----
+    FROM eclipse-temurin:17-jdk-jammy
+    
+    WORKDIR /app
+    
+    COPY --from=builder /lecturetask9/target/lecturetask9-0.0.1-SNAPSHOT.jar lecturetask9.jar
+    
+    EXPOSE 8080
+    
+    CMD ["java", "-jar", "lecturetask9.jar"]
+    
